@@ -1,0 +1,14 @@
+# Core dependencies
+pytesseract==0.3.10
+Pillow==9.5.0
+
+# Development tools
+black==23.3.0
+flake8==6.0.0
+pytest==7.3.1
+pytest-cov==4.1.0
+
+# Additional dependencies for enhanced features
+colorama==0.4.6  # Cross-platform colored terminal text
+click==8.1.7     # Command line interface creation
+rich==13.7.0     # Rich text and beautiful formatting in the terminal
