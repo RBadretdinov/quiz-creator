@@ -32,11 +32,14 @@ class MenuSystem:
         print("1. Create Question")
         print("2. Take Quiz")
         print("3. Manage Tags")
-        print("4. View Question Bank")
-        print("5. Import from Screenshot")
-        print("6. Settings")
-        print("7. Help")
-        print("8. Exit")
+        print("4. Enhanced Question Management")
+        print("5. Question Types (Not Implemented)")
+        print("6. Database Management")
+        print("7. Analytics Dashboard")
+        print("8. Import from Screenshot (Partially Implemented)")
+        print("9. Settings (Not Implemented)")
+        print("10. Help")
+        print("0. Exit")
         print()
         print("-"*60)
     
@@ -73,20 +76,25 @@ class MenuSystem:
         print("-"*60)
     
     def display_tag_management_menu(self) -> None:
-        """Display the tag management menu."""
+        """Display the enhanced tag management menu."""
         self.current_menu = "manage_tags"
         self.breadcrumbs = ["Main Menu", "Manage Tags"]
         
         print("\n" + "="*60)
-        print("           TAG MANAGEMENT")
+        print("           ENHANCED TAG MANAGEMENT")
         print("="*60)
         print()
-        print("1. View All Tags")
+        print("1. View All Tags (Hierarchical)")
         print("2. Create New Tag")
         print("3. Edit Tag")
         print("4. Delete Tag")
-        print("5. Tag Statistics")
-        print("6. Back to Main Menu")
+        print("5. Search Tags")
+        print("6. Tag Statistics (Not Implemented)")
+        print("7. Bulk Operations (Not Implemented)")
+        print("8. Import/Export Tags (Not Implemented)")
+        print("9. Tag Hierarchy View (Not Implemented)")
+        print("10. Advanced Tag Features (Not Implemented)")
+        print("0. Back to Main Menu")
         print()
         print("-"*60)
     
@@ -96,18 +104,17 @@ class MenuSystem:
         self.breadcrumbs = ["Main Menu", "Question Bank"]
         
         print("\n" + "="*60)
-        print("           QUESTION BANK")
+        print("           ENHANCED QUESTION MANAGEMENT")
         print("="*60)
-        print()
-        print("1. View All Questions")
+        print("1. Browse Questions")
         print("2. Search Questions")
-        print("3. Filter by Tags")
-        print("4. Edit Question")
-        print("5. Delete Question")
-        print("6. Export Questions")
-        print("7. Back to Main Menu")
-        print()
-        print("-"*60)
+        print("3. Edit Question")
+        print("4. Delete Question")
+        print("5. Question Statistics")
+        print("6. Bulk Operations (Not Implemented)")
+        print("7. Import/Export Questions (Not Implemented)")
+        print("0. Back to Main Menu")
+        print("="*60)
     
     def display_settings_menu(self) -> None:
         """Display the settings menu."""

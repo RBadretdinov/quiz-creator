@@ -1,476 +1,627 @@
-# API Reference
-
-This document provides detailed API reference for the Quiz Application modules.
+# Quiz Application - API Reference
 
 ## Table of Contents
+1. [Core Models](#core-models)
+2. [Data Managers](#data-managers)
+3. [Quiz Engine](#quiz-engine)
+4. [Analytics System](#analytics-system)
+5. [OCR Processing](#ocr-processing)
+6. [Performance Optimization](#performance-optimization)
+7. [Error Handling](#error-handling)
+8. [UI Components](#ui-components)
 
-- [Data Models](#data-models)
-- [Quiz Engine](#quiz-engine)
-- [Question Manager](#question-manager)
-- [Tag Manager](#tag-manager)
-- [OCR Processor](#ocr-processor)
-- [UI Components](#ui-components)
+## Core Models
 
-## Data Models
+### Question Model
 
-### Question Class
-
-Represents a quiz question with validation and serialization.
-
-#### Constructor
 ```python
-Question(question_text: str, question_type: str, answers: List[Dict], tags: List[str], question_id: Optional[str] = None)
+class Question:
+    def __init__(self, question_text: str, question_type: str, answers: List[Dict], 
+                 tags: List[str] = None, created_at: datetime = None, 
+                 updated_at: datetime = None, question_id: str = None)
 ```
 
-#### Methods
-
-##### `validate() -> Dict[str, Any]`
-Validates the question data structure and content.
-
-**Returns:**
-- `Dict` with `is_valid` (bool) and `errors` (List[str])
-
-##### `to_dict() -> Dict[str, Any]`
-Converts question to dictionary for serialization.
-
-**Returns:**
-- Dictionary representation of the question
-
-##### `from_dict(data: Dict[str, Any]) -> Question`
-Creates Question object from dictionary.
-
 **Parameters:**
-- `data`: Dictionary containing question data
+- `question_text` (str): The question text
+- `question_type` (str): Type of question ('multiple_choice', 'true_false', 'select_all', 'fill_in_blank')
+- `answers` (List[Dict]): List of answer dictionaries
+- `tags` (List[str], optional): List of tag names
+- `created_at` (datetime, optional): Creation timestamp
+- `updated_at` (datetime, optional): Last update timestamp
+- `question_id` (str, optional): Unique identifier
 
-**Returns:**
-- Question object
-
-##### `get_correct_answers() -> List[str]`
-Gets list of correct answer IDs.
-
-**Returns:**
-- List of correct answer IDs
-
-##### `update(**updates) -> None`
-Updates question fields.
-
-**Parameters:**
-- `**updates`: Fields to update
-
-### Tag Class
-
-Represents a tag for organizing questions.
-
-#### Constructor
+**Answer Dictionary Structure:**
 ```python
-Tag(name: str, description: str = "", color: str = "", tag_id: Optional[str] = None)
+{
+    "text": "Answer text",
+    "is_correct": True/False,
+    "explanation": "Optional explanation"
+}
 ```
 
-#### Methods
+**Methods:**
+- `validate()`: Validate question data
+- `to_dict()`: Convert to dictionary
+- `from_dict(data)`: Create from dictionary
+- `get_correct_answers()`: Get correct answers
+- `get_incorrect_answers()`: Get incorrect answers
 
-##### `validate() -> Dict[str, Any]`
-Validates the tag data.
+**Example:**
+```python
+question = Question(
+    question_text="What is the capital of France?",
+    question_type="multiple_choice",
+    answers=[
+        {"text": "Paris", "is_correct": True},
+        {"text": "London", "is_correct": False},
+        {"text": "Berlin", "is_correct": False},
+        {"text": "Madrid", "is_correct": False}
+    ],
+    tags=["geography", "europe", "capitals"]
+)
+```
 
-**Returns:**
-- Dictionary with validation result and errors
+### Tag Model
 
-##### `to_dict() -> Dict[str, Any]`
-Converts tag to dictionary for serialization.
+```python
+class Tag:
+    def __init__(self, name: str, description: str = "", parent_id: str = None,
+                 usage_count: int = 0, last_used: datetime = None,
+                 children: List[str] = None, aliases: List[str] = None,
+                 tag_id: str = None)
+```
 
-**Returns:**
-- Dictionary representation of the tag
+**Parameters:**
+- `name` (str): Tag name
+- `description` (str, optional): Tag description
+- `parent_id` (str, optional): Parent tag ID for hierarchy
+- `usage_count` (int, optional): Usage count
+- `last_used` (datetime, optional): Last usage timestamp
+- `children` (List[str], optional): Child tag IDs
+- `aliases` (List[str], optional): Alternative names
+- `tag_id` (str, optional): Unique identifier
 
-##### `increment_question_count() -> None`
-Increments the question count for this tag.
+**Methods:**
+- `validate()`: Validate tag data
+- `to_dict()`: Convert to dictionary
+- `from_dict(data)`: Create from dictionary
+- `add_child(child_id)`: Add child tag
+- `remove_child(child_id)`: Remove child tag
+- `add_alias(alias)`: Add alias
+- `remove_alias(alias)`: Remove alias
+- `increment_usage()`: Increment usage count
+- `get_full_path()`: Get hierarchical path
+- `get_depth()`: Get hierarchy depth
 
-##### `decrement_question_count() -> None`
-Decrements the question count for this tag.
+**Example:**
+```python
+tag = Tag(
+    name="geography",
+    description="Questions about geography",
+    parent_id=None,
+    aliases=["geo", "world"]
+)
+```
+
+### QuizSession Model
+
+```python
+class QuizSession:
+    def __init__(self, questions: List[Question], user_id: str = None,
+                 start_time: datetime = None, end_time: datetime = None,
+                 score: float = None, session_id: str = None)
+```
+
+**Parameters:**
+- `questions` (List[Question]): List of questions in session
+- `user_id` (str, optional): User identifier
+- `start_time` (datetime, optional): Session start time
+- `end_time` (datetime, optional): Session end time
+- `score` (float, optional): Session score
+- `session_id` (str, optional): Unique identifier
+
+**Methods:**
+- `validate()`: Validate session data
+- `to_dict()`: Convert to dictionary
+- `from_dict(data)`: Create from dictionary
+- `calculate_score()`: Calculate session score
+- `get_duration()`: Get session duration
+- `is_complete()`: Check if session is complete
+
+## Data Managers
+
+### QuestionManager
+
+```python
+class QuestionManager:
+    def __init__(self, db_manager: DatabaseManager = None)
+```
+
+**Methods:**
+- `add_question(question: Question) -> str`: Add question and return ID
+- `get_question(question_id: str) -> Question`: Get question by ID
+- `get_all_questions() -> List[Question]`: Get all questions
+- `update_question(question_id: str, question: Question) -> bool`: Update question
+- `delete_question(question_id: str) -> bool`: Delete question
+- `search_questions(query: str) -> List[Question]`: Search questions
+- `get_questions_by_tag(tag_name: str) -> List[Question]`: Get questions by tag
+- `get_questions_by_type(question_type: str) -> List[Question]`: Get questions by type
+- `get_question_statistics() -> Dict`: Get question statistics
+
+**Example:**
+```python
+question_manager = QuestionManager(db_manager)
+question_id = question_manager.add_question(question)
+question = question_manager.get_question(question_id)
+```
+
+### TagManager
+
+```python
+class TagManager:
+    def __init__(self, db_manager: DatabaseManager = None)
+```
+
+**Methods:**
+- `create_tag(name: str, description: str = "", parent_id: str = None) -> str`: Create tag
+- `get_tag(tag_id: str) -> Tag`: Get tag by ID
+- `get_tag_by_name(name: str) -> Tag`: Get tag by name
+- `get_all_tags() -> List[Tag]`: Get all tags
+- `update_tag(tag_id: str, tag: Tag) -> bool`: Update tag
+- `delete_tag(tag_id: str) -> bool`: Delete tag
+- `search_tags(query: str) -> List[Tag]`: Search tags
+- `get_root_tags() -> List[Tag]`: Get root tags
+- `get_children(tag_id: str) -> List[Tag]`: Get child tags
+- `get_descendants(tag_id: str) -> List[Tag]`: Get all descendants
+- `get_ancestors(tag_id: str) -> List[Tag]`: Get all ancestors
+- `merge_tags(source_id: str, target_id: str) -> bool`: Merge tags
+- `get_tag_statistics() -> Dict`: Get tag statistics
+
+**Example:**
+```python
+tag_manager = TagManager(db_manager)
+tag_id = tag_manager.create_tag("geography", "Geography questions")
+tag = tag_manager.get_tag(tag_id)
+```
 
 ## Quiz Engine
 
-### QuizEngine Class
+### QuizEngine
 
-Core quiz engine for managing quiz sessions and logic.
-
-#### Methods
-
-##### `randomize_questions(questions: List[Dict]) -> List[Dict]`
-Randomizes the order of questions using Fisher-Yates shuffle.
-
-**Parameters:**
-- `questions`: List of question dictionaries
-
-**Returns:**
-- List of questions in randomized order
-
-##### `randomize_answers(question: Dict) -> Dict`
-Randomizes the order of answer options for a question.
-
-**Parameters:**
-- `question`: Question dictionary with answers array
-
-**Returns:**
-- Question with randomized answer order
-
-##### `start_quiz(questions: List[Dict]) -> str`
-Initializes a new quiz session.
-
-**Parameters:**
-- `questions`: List of questions for the quiz
-
-**Returns:**
-- Session ID for the new quiz session
-
-##### `submit_answer(session_id: str, question_id: str, selected_answers: Any) -> Dict`
-Processes user's answer submission.
-
-**Parameters:**
-- `session_id`: Unique session identifier
-- `question_id`: Question being answered
-- `selected_answers`: User's selected answer(s)
-
-**Returns:**
-- Answer result with correctness and feedback
-
-##### `calculate_score(session: Dict) -> float`
-Calculates final quiz score and statistics.
-
-**Parameters:**
-- `session`: Completed quiz session
-
-**Returns:**
-- Score percentage
-
-## Question Manager
-
-### QuestionManager Class
-
-Manages question bank operations and validation.
-
-#### Constructor
 ```python
-QuestionManager(data_dir: str = "data")
+class QuizEngine:
+    def __init__(self, question_manager: QuestionManager, tag_manager: TagManager)
 ```
 
-#### Methods
+**Methods:**
+- `create_quiz(num_questions: int, question_types: List[str] = None, 
+               tags: List[str] = None, randomize: bool = True) -> QuizSession`: Create quiz
+- `start_quiz(session: QuizSession) -> bool`: Start quiz session
+- `submit_answer(session_id: str, question_id: str, answer: Any) -> Dict`: Submit answer
+- `pause_quiz(session_id: str) -> bool`: Pause quiz session
+- `resume_quiz(session_id: str) -> bool`: Resume quiz session
+- `end_quiz(session_id: str) -> Dict`: End quiz session
+- `get_quiz_progress(session_id: str) -> Dict`: Get quiz progress
+- `calculate_score(session_id: str) -> Dict`: Calculate session score
+- `export_quiz_session(session_id: str, format: str = "json") -> str`: Export session
 
-##### `create_question(question_text: str, question_type: str, answers: List[Dict], tags: List[str]) -> Dict`
-Creates a new question with validation.
-
-**Parameters:**
-- `question_text`: The question content
-- `question_type`: Type of question
-- `answers`: List of answer dictionaries
-- `tags`: List of tag names
-
-**Returns:**
-- Created question dictionary
-
-##### `get_question(question_id: str) -> Optional[Dict]`
-Gets a question by its ID.
-
-**Parameters:**
-- `question_id`: Question ID
-
-**Returns:**
-- Question dictionary or None
-
-##### `get_all_questions() -> List[Dict]`
-Gets all questions in the question bank.
-
-**Returns:**
-- List of all question dictionaries
-
-##### `search_questions(search_term: str) -> List[Dict]`
-Searches questions by text content.
-
-**Parameters:**
-- `search_term`: Search term
-
-**Returns:**
-- List of matching questions
-
-##### `update_question(question_id: str, **updates) -> bool`
-Updates an existing question.
-
-**Parameters:**
-- `question_id`: ID of question to update
-- `**updates`: Fields to update
-
-**Returns:**
-- True if update successful
-
-##### `delete_question(question_id: str) -> bool`
-Deletes a question from the question bank.
-
-**Parameters:**
-- `question_id`: Question ID to delete
-
-**Returns:**
-- True if deletion successful
-
-## Tag Manager
-
-### TagManager Class
-
-Manages tag operations and question organization.
-
-#### Constructor
+**Example:**
 ```python
-TagManager(data_dir: str = "data")
+quiz_engine = QuizEngine(question_manager, tag_manager)
+session = quiz_engine.create_quiz(10, ["multiple_choice"], ["geography"])
+quiz_engine.start_quiz(session)
+result = quiz_engine.submit_answer(session.session_id, question_id, "A")
 ```
 
-#### Methods
+## Analytics System
 
-##### `create_tag(name: str, description: str = "", color: str = "") -> Dict`
-Creates a new tag.
+### AnalyticsEngine
 
-**Parameters:**
-- `name`: Tag name (must be unique)
-- `description`: Optional description
-- `color`: Optional hex color code
+```python
+class AnalyticsEngine:
+    def __init__(self, db_manager: DatabaseManager)
+```
 
-**Returns:**
-- Created tag dictionary
+**Methods:**
+- `get_performance_analytics(user_id: str = None) -> Dict`: Get performance analytics
+- `get_learning_analytics(user_id: str = None) -> Dict`: Get learning analytics
+- `get_question_analytics(question_id: str = None) -> Dict`: Get question analytics
+- `get_tag_analytics(tag_id: str = None) -> Dict`: Get tag analytics
+- `get_system_analytics() -> Dict`: Get system analytics
+- `export_analytics(format: str = "json") -> str`: Export analytics data
+- `get_analytics_summary() -> Dict`: Get analytics summary
 
-##### `get_all_tags() -> List[Dict]`
-Gets all tags sorted by name.
+**Example:**
+```python
+analytics_engine = AnalyticsEngine(db_manager)
+performance = analytics_engine.get_performance_analytics()
+learning = analytics_engine.get_learning_analytics()
+```
 
-**Returns:**
-- List of all tag dictionaries
+### AnalyticsDashboard
 
-##### `get_tag_by_name(name: str) -> Optional[Dict]`
-Gets a tag by its name.
+```python
+class AnalyticsDashboard:
+    def __init__(self, analytics_engine: AnalyticsEngine, 
+                 display_manager: DisplayManager, prompts: InputPrompts)
+```
 
-**Parameters:**
-- `name`: Tag name
+**Methods:**
+- `show_main_dashboard() -> None`: Show main analytics dashboard
+- `show_performance_analytics() -> None`: Show performance analytics
+- `show_learning_analytics() -> None`: Show learning analytics
+- `show_question_analytics() -> None`: Show question analytics
+- `show_tag_analytics() -> None`: Show tag analytics
+- `show_system_analytics() -> None`: Show system analytics
+- `export_analytics() -> None`: Export analytics data
 
-**Returns:**
-- Tag dictionary or None
+## OCR Processing
 
-##### `search_tags(search_term: str) -> List[Dict]`
-Searches tags by name or description.
+### OCRProcessor
 
-**Parameters:**
-- `search_term`: Search term
+```python
+class OCRProcessor:
+    def __init__(self, use_advanced_ocr: bool = True)
+```
 
-**Returns:**
-- List of matching tags
+**Methods:**
+- `process_screenshot(image_path: str) -> Dict`: Process image for OCR
+- `batch_process_images(image_paths: List[str]) -> List[Dict]`: Process multiple images
+- `test_ocr_accuracy(test_images: List[str]) -> Dict`: Test OCR accuracy
+- `get_processing_statistics() -> Dict`: Get processing statistics
+- `clear_ocr_cache() -> None`: Clear OCR cache
 
-##### `get_tag_statistics() -> Dict[str, Any]`
-Gets statistics about tag usage.
+**Example:**
+```python
+ocr_processor = OCRProcessor(use_advanced_ocr=True)
+result = ocr_processor.process_screenshot("image.png")
+questions = result.get("questions", [])
+```
 
-**Returns:**
-- Dictionary with tag usage statistics
+### AdvancedOCRProcessor
 
-## OCR Processor
+```python
+class AdvancedOCRProcessor:
+    def __init__(self, cache_dir: str = "./data/ocr_cache")
+```
 
-### OCRProcessor Class
+**Methods:**
+- `process_screenshot(image_path: str) -> Dict`: Process image with advanced OCR
+- `batch_process_images(image_paths: List[str]) -> List[Dict]`: Batch process images
+- `get_processing_statistics() -> Dict`: Get processing statistics
+- `clear_cache() -> None`: Clear OCR cache
+- `assess_image_quality(image_path: str) -> Dict`: Assess image quality
 
-Handles OCR processing and image preprocessing for question extraction.
+## Performance Optimization
 
-#### Methods
+### PerformanceOptimizer
 
-##### `process_screenshot(image_path: str) -> Dict[str, Any]`
-Processes a screenshot to extract questions and answers.
+```python
+class PerformanceOptimizer:
+    def __init__(self, cache_size: int = 1000, memory_threshold: float = 0.8)
+```
 
-**Parameters:**
-- `image_path`: Path to the image file
+**Methods:**
+- `enable_caching(func: Callable) -> Callable`: Decorator for caching functions
+- `optimize_memory_usage() -> Dict`: Optimize memory usage
+- `optimize_database_queries(db_path: str) -> Dict`: Optimize database queries
+- `optimize_file_operations(file_paths: List[str]) -> Dict`: Optimize file operations
+- `get_performance_metrics() -> Dict`: Get performance metrics
+- `clear_cache() -> None`: Clear all caches
+- `set_optimization_level(level: str) -> None`: Set optimization level
 
-**Returns:**
-- Dictionary containing extracted text and processing results
+**Example:**
+```python
+optimizer = PerformanceOptimizer(cache_size=1000, memory_threshold=0.8)
 
-##### `validate_image_format(image_path: str) -> bool`
-Validates that the image is in a supported format.
+@optimizer.enable_caching
+def expensive_function(x):
+    return x * 2
 
-**Parameters:**
-- `image_path`: Path to image file
+metrics = optimizer.get_performance_metrics()
+```
 
-**Returns:**
-- True if format is supported
+### IntelligentCache
 
-##### `batch_process_images(image_paths: List[str]) -> List[Dict[str, Any]]`
-Processes multiple images in batch.
+```python
+class IntelligentCache:
+    def __init__(self, max_size: int = 1000, default_ttl: int = 3600)
+```
 
-**Parameters:**
-- `image_paths`: List of image file paths
+**Methods:**
+- `get(key: str, default: Any = None) -> Any`: Get value from cache
+- `set(key: str, value: Any, ttl: int = None) -> None`: Set value in cache
+- `delete(key: str) -> bool`: Delete key from cache
+- `clear() -> None`: Clear all cache entries
+- `get_stats() -> Dict`: Get cache statistics
+- `start_cleanup_thread() -> None`: Start background cleanup
+- `stop_cleanup_thread() -> None`: Stop background cleanup
 
-**Returns:**
-- List of processing results for each image
-
-## UI Components
-
-### MenuSystem Class
-
-Handles console menu display and navigation.
-
-#### Methods
-
-##### `display_main_menu() -> None`
-Displays the main application menu.
-
-##### `display_question_creation_menu() -> None`
-Displays the question creation menu.
-
-##### `get_user_choice(min_choice: int = 1, max_choice: int = 8) -> int`
-Gets user menu choice with validation.
-
-**Parameters:**
-- `min_choice`: Minimum valid choice number
-- `max_choice`: Maximum valid choice number
-
-**Returns:**
-- User's choice as integer
-
-##### `display_confirmation(message: str) -> bool`
-Displays a confirmation prompt.
-
-**Parameters:**
-- `message`: Confirmation message
-
-**Returns:**
-- True if user confirms
-
-### InputPrompts Class
-
-Handles user input prompts and validation.
-
-#### Methods
-
-##### `prompt_question_text() -> str`
-Prompts user for question text with validation.
-
-**Returns:**
-- Validated question text
-
-##### `prompt_question_type() -> str`
-Prompts user for question type.
-
-**Returns:**
-- Selected question type
-
-##### `prompt_answer_options(question_type: str) -> List[Dict[str, Any]]`
-Prompts user for answer options based on question type.
-
-**Parameters:**
-- `question_type`: Type of question being created
-
-**Returns:**
-- List of answer dictionaries
-
-##### `sanitize_input(text: str) -> str`
-Sanitizes user input text.
-
-**Parameters:**
-- `text`: Raw input text
-
-**Returns:**
-- Sanitized text
-
-### DisplayManager Class
-
-Handles display of quiz content and results.
-
-#### Methods
-
-##### `display_question(question: Dict[str, Any], question_num: int, total_questions: int) -> None`
-Displays a question with its answer options.
-
-**Parameters:**
-- `question`: Question dictionary
-- `question_num`: Current question number
-- `total_questions`: Total number of questions
-
-##### `display_quiz_progress(current: int, total: int) -> None`
-Displays quiz progress.
-
-**Parameters:**
-- `current`: Current question number
-- `total`: Total number of questions
-
-##### `display_feedback(is_correct: bool, correct_answers: List[str], question: Dict[str, Any]) -> None`
-Displays immediate feedback for an answer.
-
-**Parameters:**
-- `is_correct`: Whether the answer was correct
-- `correct_answers`: List of correct answer IDs
-- `question`: Question dictionary
-
-##### `display_results(session: Dict[str, Any]) -> None`
-Displays final quiz results.
-
-**Parameters:**
-- `session`: Quiz session dictionary
+**Example:**
+```python
+cache = IntelligentCache(max_size=1000, default_ttl=3600)
+cache.set("key1", "value1", ttl=1800)
+value = cache.get("key1")
+stats = cache.get_stats()
+```
 
 ## Error Handling
 
-All classes include comprehensive error handling with custom exception types:
+### ErrorHandler
 
-- `ValueError`: For validation errors
-- `FileNotFoundError`: For missing files
-- `RuntimeError`: For system errors
+```python
+class ErrorHandler:
+    def __init__(self, log_errors: bool = True)
+```
 
-## Logging
+**Methods:**
+- `handle_error(error: Exception, context: str = None) -> Dict`: Handle error
+- `log_error(error: Exception, context: str = None) -> None`: Log error
+- `get_error_statistics() -> Dict`: Get error statistics
+- `clear_error_log() -> bool`: Clear error log
+- `export_error_log() -> str`: Export error log
 
-All modules use structured logging with the following levels:
-- `DEBUG`: Detailed debugging information
-- `INFO`: General information
-- `WARNING`: Warning messages
-- `ERROR`: Error messages
-- `CRITICAL`: Critical errors
+### InputValidator
 
-## Data Formats
+```python
+class InputValidator:
+    def __init__(self)
+```
 
-### Question Format
-```json
+**Methods:**
+- `validate_question(question_data: Dict) -> Tuple[bool, List[str]]`: Validate question
+- `validate_tag(tag_data: Dict) -> Tuple[bool, List[str]]`: Validate tag
+- `validate_file_path(file_path: str) -> bool`: Validate file path
+- `validate_email(email: str) -> bool`: Validate email
+- `validate_number(value: Any, min_val: float = None, max_val: float = None) -> bool`: Validate number
+
+### DataIntegrityChecker
+
+```python
+class DataIntegrityChecker:
+    def __init__(self, db_manager: DatabaseManager)
+```
+
+**Methods:**
+- `check_question_integrity() -> Dict`: Check question data integrity
+- `check_tag_integrity() -> Dict`: Check tag data integrity
+- `check_session_integrity() -> Dict`: Check session data integrity
+- `check_referential_integrity() -> Dict`: Check referential integrity
+- `repair_data_integrity() -> Dict`: Repair data integrity issues
+
+## UI Components
+
+### DisplayManager
+
+```python
+class DisplayManager:
+    def __init__(self)
+```
+
+**Methods:**
+- `show_welcome() -> None`: Show welcome message
+- `show_main_menu() -> None`: Show main menu
+- `show_question(question: Question, question_num: int, total: int) -> None`: Show question
+- `show_quiz_results(results: Dict) -> None`: Show quiz results
+- `show_analytics(analytics: Dict) -> None`: Show analytics
+- `show_error(message: str) -> None`: Show error message
+- `show_success(message: str) -> None`: Show success message
+- `show_info(message: str) -> None`: Show info message
+- `show_loading(message: str) -> None`: Show loading message
+- `clear_screen() -> None`: Clear screen
+
+### InputPrompts
+
+```python
+class InputPrompts:
+    def __init__(self)
+```
+
+**Methods:**
+- `get_text_input(prompt: str, required: bool = True) -> str`: Get text input
+- `get_number_input(prompt: str, min_val: int = None, max_val: int = None) -> int`: Get number input
+- `get_choice_input(prompt: str, choices: List[str]) -> str`: Get choice input
+- `get_yes_no_input(prompt: str) -> bool`: Get yes/no input
+- `get_menu_choice(max_choice: int) -> int`: Get menu choice
+- `get_multiple_choice_input(prompt: str, choices: List[str]) -> List[str]`: Get multiple choice input
+- `get_file_input(prompt: str, file_types: List[str] = None) -> str`: Get file input
+
+### MenuSystem
+
+```python
+class MenuSystem:
+    def __init__(self)
+```
+
+**Methods:**
+- `display_main_menu() -> None`: Display main menu
+- `display_question_creation_menu() -> None`: Display question creation menu
+- `display_quiz_menu() -> None`: Display quiz menu
+- `display_tag_management_menu() -> None`: Display tag management menu
+- `display_analytics_menu() -> None`: Display analytics menu
+- `display_settings_menu() -> None`: Display settings menu
+- `display_help_menu() -> None`: Display help menu
+
+## Database Components
+
+### DatabaseManager
+
+```python
+class DatabaseManager:
+    def __init__(self, db_path: str = "./data/quiz.db")
+```
+
+**Methods:**
+- `initialize_database() -> bool`: Initialize database
+- `backup_database() -> str`: Backup database
+- `restore_database(backup_path: str) -> bool`: Restore database
+- `optimize_database() -> Dict`: Optimize database
+- `get_database_statistics() -> Dict`: Get database statistics
+- `close_connection() -> None`: Close database connection
+
+### DatabaseConnection
+
+```python
+class DatabaseConnection:
+    def __init__(self, db_path: str)
+```
+
+**Methods:**
+- `get_connection() -> sqlite3.Connection`: Get database connection
+- `execute_query(query: str, params: tuple = None) -> List[Dict]`: Execute query
+- `execute_update(query: str, params: tuple = None) -> int`: Execute update
+- `begin_transaction() -> None`: Begin transaction
+- `commit_transaction() -> None`: Commit transaction
+- `rollback_transaction() -> None`: Rollback transaction
+
+## File I/O Components
+
+### FileImporter
+
+```python
+class FileImporter:
+    def __init__(self)
+```
+
+**Methods:**
+- `import_json(file_path: str) -> Dict`: Import JSON file
+- `import_csv(file_path: str) -> Dict`: Import CSV file
+- `import_html(file_path: str) -> Dict`: Import HTML file
+- `validate_import_data(data: Dict) -> Tuple[bool, List[str]]`: Validate import data
+- `get_import_statistics() -> Dict`: Get import statistics
+
+### FileExporter
+
+```python
+class FileExporter:
+    def __init__(self)
+```
+
+**Methods:**
+- `export_json(data: Dict, file_path: str) -> bool`: Export to JSON
+- `export_csv(data: Dict, file_path: str) -> bool`: Export to CSV
+- `export_html(data: Dict, file_path: str) -> bool`: Export to HTML
+- `get_export_statistics() -> Dict`: Get export statistics
+- `compress_export(file_path: str) -> str`: Compress export file
+
+## Utility Functions
+
+### Performance Decorators
+
+```python
+@optimize_performance
+def expensive_function(x):
+    return x * 2
+
+@cached(ttl=3600, cache_type='global')
+def cached_function(x):
+    return x * 2
+
+@profile_operation("operation_name")
+def profiled_function():
+    pass
+```
+
+### Validation Functions
+
+```python
+def validate_question_data(data: Dict) -> Tuple[bool, List[str]]:
+    """Validate question data structure"""
+    pass
+
+def validate_tag_data(data: Dict) -> Tuple[bool, List[str]]:
+    """Validate tag data structure"""
+    pass
+
+def validate_session_data(data: Dict) -> Tuple[bool, List[str]]:
+    """Validate session data structure"""
+    pass
+```
+
+### Helper Functions
+
+```python
+def generate_id() -> str:
+    """Generate unique identifier"""
+    pass
+
+def format_timestamp(timestamp: datetime) -> str:
+    """Format timestamp for display"""
+    pass
+
+def calculate_score(correct: int, total: int) -> float:
+    """Calculate percentage score"""
+    pass
+
+def format_duration(seconds: int) -> str:
+    """Format duration for display"""
+    pass
+```
+
+## Error Codes
+
+### Application Errors
+- **E001**: Database connection error
+- **E002**: File permission error
+- **E003**: Memory allocation error
+- **E004**: OCR processing error
+- **E005**: Cache operation error
+- **E006**: Validation error
+- **E007**: Import/export error
+- **E008**: Performance error
+
+### Validation Errors
+- **V001**: Invalid question format
+- **V002**: Invalid tag format
+- **V003**: Invalid session format
+- **V004**: Invalid file format
+- **V005**: Invalid input data
+
+### System Errors
+- **S001**: System resource error
+- **S002**: Network connection error
+- **S003**: File system error
+- **S004**: Process error
+- **S005**: Configuration error
+
+## Configuration Options
+
+### Application Configuration
+```python
 {
-  "id": "string",
-  "question_text": "string",
-  "question_type": "multiple_choice|true_false|select_all",
-  "answers": [
-    {
-      "id": "string",
-      "text": "string",
-      "is_correct": boolean
+    "database": {
+        "path": "./data/quiz.db",
+        "backup_dir": "./data/backups",
+        "connection_pool_size": 10
+    },
+    "performance": {
+        "cache_size": 1000,
+        "memory_threshold": 0.8,
+        "optimization_level": "medium"
+    },
+    "ocr": {
+        "enabled": True,
+        "confidence_threshold": 0.7,
+        "preprocessing": True
+    },
+    "logging": {
+        "level": "INFO",
+        "max_file_size": 10485760,
+        "backup_count": 5
     }
-  ],
-  "tags": ["string"],
-  "created_at": "ISO datetime",
-  "last_modified": "ISO datetime",
-  "usage_count": number
 }
 ```
 
-### Tag Format
-```json
-{
-  "id": "string",
-  "name": "string",
-  "description": "string",
-  "color": "string",
-  "question_count": number,
-  "created_at": "ISO datetime",
-  "created_by": "string"
-}
+### Environment Variables
+```bash
+QUIZ_DB_PATH=./data/quiz.db
+QUIZ_BACKUP_DIR=./data/backups
+QUIZ_CACHE_SIZE=1000
+QUIZ_MEMORY_THRESHOLD=0.8
+QUIZ_LOG_LEVEL=INFO
+QUIZ_LOG_DIR=./data/logs
 ```
 
-### Quiz Session Format
-```json
-{
-  "id": "string",
-  "questions": [Question],
-  "current_question_index": number,
-  "answers": [
-    {
-      "question_id": "string",
-      "selected_answers": "string|array",
-      "is_correct": boolean,
-      "timestamp": "ISO datetime"
-    }
-  ],
-  "score": number,
-  "start_time": "ISO datetime",
-  "end_time": "ISO datetime",
-  "is_complete": boolean
-}
-```
+---
+
+**For more detailed examples and usage patterns, see the [User Guide](USER_GUIDE.md) and [README](README.md).**

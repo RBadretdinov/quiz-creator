@@ -170,10 +170,10 @@ class TestQuizEngine(unittest.TestCase):
         self.engine.submit_answer(session_id, "q3", "a7")
         
         session = self.engine.active_sessions[session_id]
-        score = self.engine.calculate_score(session)
+        score_info = self.engine.calculate_score(session)
         
         # Should be 2/3 = 66.7%
-        self.assertAlmostEqual(score, 66.7, places=1)
+        self.assertAlmostEqual(score_info['percentage'], 66.7, places=1)
     
     def test_quiz_completion(self):
         """Test quiz completion flow."""

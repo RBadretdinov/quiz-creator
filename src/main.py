@@ -37,10 +37,12 @@ def main():
     logger.info("Starting Quiz Application")
     
     try:
-        # TODO: Import and initialize main application components
-        print("Welcome to the Quiz Application!")
-        print("This is a placeholder for the main application logic.")
-        print("Phase 1.1 setup completed successfully.")
+        # Import and initialize main application components
+        from app_controller_db import AppControllerDB
+        
+        # Create and run the application
+        app = AppControllerDB()
+        app.run()
         
     except Exception as e:
         logger.error(f"Application error: {e}")

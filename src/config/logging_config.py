@@ -235,3 +235,4 @@ def log_system_info():
     """Log system information."""
     if _logging_config:
         _logging_config.log_system_info()
+

@@ -5,3 +5,4 @@ This module contains configuration settings and utilities for the Quiz Applicati
 """
 
 __version__ = "1.0.0"
+

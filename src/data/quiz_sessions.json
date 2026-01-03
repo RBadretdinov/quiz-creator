@@ -1,0 +1,124 @@
+{
+  "2e7cfe51-96c1-4963-bbea-c7fc81785ff9": {
+    "id": "2e7cfe51-96c1-4963-bbea-c7fc81785ff9",
+    "questions": [
+      {
+        "id": "66baed7e-38b9-42bd-9649-7ac92783f7d0",
+        "question_text": "What is 2+2",
+        "question_type": "select_all",
+        "answers": [
+          {
+            "text": "4",
+            "is_correct": true
+          },
+          {
+            "text": "4-2",
+            "is_correct": false
+          },
+          {
+            "text": "7-3",
+            "is_correct": true
+          }
+        ],
+        "tags": [
+          "Math"
+        ],
+        "usage_count": 0,
+        "quality_score": 0.0,
+        "created_at": "2025-10-20T18:20:13.410098",
+        "last_modified": "2025-10-20T18:20:13.410105",
+        "created_by": null,
+        "version": 1
+      }
+    ],
+    "current_question_index": 0,
+    "answers": [],
+    "score": 0,
+    "start_time": "2025-10-20T18:20:23.169287",
+    "end_time": null,
+    "is_complete": false,
+    "is_paused": false,
+    "pause_count": 0,
+    "total_pause_time": 0.0,
+    "last_activity": "2025-10-20T18:20:23.169292",
+    "metadata": {
+      "question_count": 1,
+      "tags_used": [
+        "Math"
+      ]
+    }
+  },
+  "21c9e735-6225-440a-b0d0-b56028841ef3": {
+    "id": "21c9e735-6225-440a-b0d0-b56028841ef3",
+    "questions": [
+      {
+        "id": "453610de-a1d5-432d-98c6-72382cd0fd3d",
+        "question_text": "2+2",
+        "question_type": "multiple_choice",
+        "answers": [
+          {
+            "text": "4",
+            "is_correct": true
+          },
+          {
+            "text": "334",
+            "is_correct": false
+          }
+        ],
+        "tags": [
+          "Math"
+        ],
+        "usage_count": 0,
+        "quality_score": 0.0,
+        "created_at": "2025-10-20T18:30:31.050399",
+        "last_modified": "2025-10-20T18:30:31.050407",
+        "created_by": null,
+        "version": 1
+      }
+    ],
+    "current_question_index": 1,
+    "answers": [
+      {
+        "question_id": "453610de-a1d5-432d-98c6-72382cd0fd3d",
+        "selected_answers": [
+          0
+        ],
+        "is_correct": true,
+        "partial_credit": 0,
+        "score_earned": 1,
+        "max_points": 1,
+        "feedback": "Correct",
+        "timestamp": "2025-10-20T18:30:52.370604",
+        "response_time": 23.2450817040884,
+        "validation_details": {
+          "selected": 0,
+          "correct": 0
+        }
+      }
+    ],
+    "score": {
+      "total_score": 1.0,
+      "percentage": 100.0,
+      "correct_count": 1,
+      "total_questions": 1,
+      "partial_credit_earned": 0.0,
+      "average_response_time": 23.2450817040884,
+      "completion_time": 14.194152,
+      "pause_count": 0,
+      "total_pause_time": 0.0
+    },
+    "start_time": "2025-10-20T18:30:38.176468",
+    "end_time": "2025-10-20T18:30:52.370620",
+    "is_complete": true,
+    "is_paused": false,
+    "pause_count": 0,
+    "total_pause_time": 0.0,
+    "last_activity": "2025-10-20T18:30:52.370615",
+    "metadata": {
+      "question_count": 1,
+      "tags_used": [
+        "Math"
+      ]
+    }
+  }
+}

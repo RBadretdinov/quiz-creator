@@ -48,10 +48,22 @@ Thumbs.db
 
 # Project specific
 data/*.json
+data/quiz.db
+data/quiz.db-*
+data/logs/*.log
+data/backups/*
+data/backup/*
+data/ocr_cache/*
+data/ocr_tests/*
 logs/*.log
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
+src/data/quiz.db
+src/data/quiz.db-*
+src/logs/*.log
 
 # Test coverage
 htmlcov/
@@ -107,3 +119,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Web application
+web/static/*
+!web/static/.gitkeep
+
+# Temporary files
+*.html
+command_history_*.json
+test_results.txt
+analytics_performance_*.html
+

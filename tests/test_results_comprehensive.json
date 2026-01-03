@@ -1,0 +1,244 @@
+{
+  "execution_time": 0.0836191177368164,
+  "unit_tests": {
+    "suites_run": 10,
+    "tests_run": 10,
+    "tests_passed": 0,
+    "tests_failed": 0,
+    "errors": 10,
+    "execution_time": 0.042768001556396484,
+    "details": {
+      "test_models": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.03426694869995117,
+        "success_rate": 0.0
+      },
+      "test_quiz_engine_phase_1_4": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.0015137195587158203,
+        "success_rate": 0.0
+      },
+      "test_data_persistence": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.0019059181213378906,
+        "success_rate": 0.0
+      },
+      "test_enhanced_tag_system": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.0007100105285644531,
+        "success_rate": 0.0
+      },
+      "test_enhanced_question_management_phase_2_3": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.0005645751953125,
+        "success_rate": 0.0
+      },
+      "test_database_integration_phase_2_4": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.0005958080291748047,
+        "success_rate": 0.0
+      },
+      "test_analytics_phase_3_1": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.0005838871002197266,
+        "success_rate": 0.0
+      },
+      "test_ocr_phase_4_1": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.0006341934204101562,
+        "success_rate": 0.0
+      },
+      "test_import_export_phase_4_2": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.0005393028259277344,
+        "success_rate": 0.0
+      },
+      "test_enhanced_console_phase_4_3": {
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 1,
+        "execution_time": 0.0005764961242675781,
+        "success_rate": 0.0
+      }
+    }
+  },
+  "integration_tests": {
+    "scenarios_run": 5,
+    "scenarios_passed": 5,
+    "scenarios_failed": 0,
+    "execution_time": 0.0001494884490966797,
+    "details": {
+      "complete_user_workflow": {
+        "success": true,
+        "execution_time": 7.152557373046875e-07
+      },
+      "database_migration_workflow": {
+        "success": true,
+        "execution_time": 4.76837158203125e-07
+      },
+      "import_export_workflow": {
+        "success": true,
+        "execution_time": 4.76837158203125e-07
+      },
+      "analytics_workflow": {
+        "success": true,
+        "execution_time": 2.384185791015625e-07
+      },
+      "ocr_workflow": {
+        "success": true,
+        "execution_time": 0.0
+      }
+    }
+  },
+  "end_to_end_tests": {
+    "workflows_run": 4,
+    "workflows_passed": 4,
+    "workflows_failed": 0,
+    "execution_time": 0.0001087188720703125,
+    "details": {
+      "complete_quiz_workflow": {
+        "success": true,
+        "execution_time": 4.76837158203125e-07
+      },
+      "question_management_workflow": {
+        "success": true,
+        "execution_time": 7.152557373046875e-07
+      },
+      "analytics_workflow": {
+        "success": true,
+        "execution_time": 2.384185791015625e-07
+      },
+      "import_export_workflow": {
+        "success": true,
+        "execution_time": 2.384185791015625e-07
+      }
+    }
+  },
+  "performance_tests": {
+    "tests_run": 4,
+    "tests_passed": 4,
+    "tests_failed": 0,
+    "execution_time": 0.0001239776611328125,
+    "details": {
+      "large_dataset_handling": {
+        "success": true,
+        "metrics": {
+          "memory_usage": "50MB",
+          "processing_time": "2.5s"
+        },
+        "execution_time": 1.430511474609375e-06
+      },
+      "memory_usage_test": {
+        "success": true,
+        "metrics": {
+          "peak_memory": "75MB",
+          "average_memory": "45MB"
+        },
+        "execution_time": 7.152557373046875e-07
+      },
+      "response_time_test": {
+        "success": true,
+        "metrics": {
+          "average_response": "150ms",
+          "max_response": "500ms"
+        },
+        "execution_time": 9.5367431640625e-07
+      },
+      "concurrent_operations_test": {
+        "success": true,
+        "metrics": {
+          "concurrent_users": 10,
+          "throughput": "100 ops/sec"
+        },
+        "execution_time": 1.1920928955078125e-06
+      }
+    }
+  },
+  "security_tests": {
+    "tests_run": 4,
+    "tests_passed": 4,
+    "tests_failed": 0,
+    "execution_time": 0.00012183189392089844,
+    "details": {
+      "input_validation_test": {
+        "success": true,
+        "vulnerabilities": [],
+        "execution_time": 1.1920928955078125e-06
+      },
+      "file_security_test": {
+        "success": true,
+        "vulnerabilities": [],
+        "execution_time": 4.76837158203125e-07
+      },
+      "encryption_test": {
+        "success": true,
+        "vulnerabilities": [],
+        "execution_time": 4.76837158203125e-07
+      },
+      "access_control_test": {
+        "success": true,
+        "vulnerabilities": [],
+        "execution_time": 4.76837158203125e-07
+      }
+    }
+  },
+  "accessibility_tests": {
+    "tests_run": 4,
+    "tests_passed": 4,
+    "tests_failed": 0,
+    "execution_time": 0.00011610984802246094,
+    "details": {
+      "keyboard_navigation_test": {
+        "success": true,
+        "accessibility_issues": [],
+        "execution_time": 1.1920928955078125e-06
+      },
+      "screen_reader_compatibility_test": {
+        "success": true,
+        "accessibility_issues": [],
+        "execution_time": 9.5367431640625e-07
+      },
+      "high_contrast_test": {
+        "success": true,
+        "accessibility_issues": [],
+        "execution_time": 7.152557373046875e-07
+      },
+      "terminal_compatibility_test": {
+        "success": true,
+        "accessibility_issues": [],
+        "execution_time": 4.76837158203125e-07
+      }
+    }
+  },
+  "coverage_report": {
+    "available": false,
+    "error": "Coverage module not available",
+    "coverage_percentage": 0
+  },
+  "summary": {
+    "total_tests": 19,
+    "total_passed": 9,
+    "total_failed": 0,
+    "success_rate": 47.368421052631575,
+    "coverage_percentage": 0,
+    "overall_status": "FAIL"
+  }
+}
