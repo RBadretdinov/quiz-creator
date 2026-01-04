@@ -125,8 +125,7 @@ web/static/*
 !web/static/.gitkeep
 
 # Temporary files
-*.html
+analytics_performance_*.html
 command_history_*.json
 test_results.txt
-analytics_performance_*.html
-
+# Note: web/index.html is NOT ignored - it's needed for GitHub Pages
